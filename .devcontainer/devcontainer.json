@@ -4,10 +4,10 @@
 		"context": "..",
 		"dockerfile": "Dockerfile"
 	},
-	"workspaceFolder": "/app",
+	"workspaceFolder": "/my_app",
 	"forwardPorts": [8501],
-	"remoteUser": "app",
-  	"containerUser": "app",
+	"remoteUser": "my_app",
+  	"containerUser": "my_app",
 	"runArgs": ["--name", "yolov10_streamlit"],
 	"customizations": {
 		"vscode": {
@@ -31,7 +31,7 @@
 				"files.exclude": {
 				  "**/__pycache__": true,
 				  "**/.cache": true,
-				  "**/.venv": true,
+				  "**/.venv": true
 				},
 				"[python]": {
 					"editor.tabSize": 4,
