@@ -35,12 +35,9 @@ This project uses a development container for consistent development environment
 If not using the development container, you can install the dependencies manually:
 ```bash
 pip install -r requirements.txt
-cd app
-git clone https://github.com/THU-MIG/yolov10.git
-cd yolov10
-pip install -r requirements.txt
-pip install -e .
-cd ../..
+git clone https://github.com/THU-MIG/yolov10.git app/yolov10
+pip install -r app/yolov10/requirements.txt
+pip install -e app/yolov10
 ```
 
 ### 4. Run the Application
