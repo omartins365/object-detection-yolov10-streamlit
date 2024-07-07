@@ -2,7 +2,7 @@ FROM python:3.9-bullseye
 
 ENV SHELL=/bin/bash
 
-ARG USERNAME=app
+ARG USERNAME=my_app
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
@@ -15,7 +15,7 @@ RUN apt-get update \
     && chmod 0440 /etc/sudoers.d/$USERNAME \
     && apt-get clean 
 
-WORKDIR /app
+WORKDIR /my_app
 
 COPY requirements.txt .
 
@@ -23,17 +23,17 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 RUN git clone https://github.com/primestyle-co/dotfiles .dotfiles && python3 .dotfiles/install.py;
 
-RUN git clone https://github.com/THU-MIG/yolov10.git /app/yolov10 \
-    && cd /app/yolov10 \
+RUN git clone https://github.com/THU-MIG/yolov10.git /my_app/app/yolov10 \
+    && cd /my_app/app/yolov10 \
     && pip install -r requirements.txt \
     && pip install -e .
 
 COPY . .
 
-RUN chown -R $USERNAME:$USERNAME /app
+RUN chown -R $USERNAME:$USERNAME /my_app
 USER $USERNAME
 SHELL ["/bin/bash", "-ec"]
 
 EXPOSE 8501
 
-ENTRYPOINT ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+ENTRYPOINT ["streamlit", "run", "app/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
