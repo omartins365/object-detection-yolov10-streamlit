@@ -4,20 +4,20 @@ This project integrates the YOLOv10 model for object detection into a Streamlit 
 
 ### Files and Directories
 
-- **README.md**: Provides an overview and instructions for the project.
-- **app**: Contains the main application code.
-  - **app.py**: The main Streamlit app that allows users to upload images or videos for object detection.
-  - **config.py**: Configuration settings for the app, including paths and URLs.
-  - **utils.py**: Utility functions used in the app, such as downloading models and processing images.
-- **.devcontainer**: Contains configuration files for the development container.
-  - **devcontainer.json**: Configuration file for setting up the development container.
-  - **Dockerfile**: Dockerfile for creating the development container image.
-- **requirements.txt**: Lists the Python dependencies required for the project.
-
+- **README.md**: Project overview and instructions.
+- **app**: Main application code.
+  - **app.py**: Streamlit app for uploading and processing images/videos.
+  - **config.py**: Configuration settings, including paths and URLs.
+  - **utils.py**: Utility functions, such as model downloading and image processing.
+  - **train.py**: Script to train a custom YOLOv10 model.
+- **.devcontainer**: Development container configuration.
+  - **devcontainer.json**: Setup configuration for the development container.
+  - **Dockerfile**: Dockerfile for the development container image.
+- **requirements.txt**: Python dependencies for the project.
 
 ## Installation
 
-To run this project locally, follow these steps:
+Follow these steps to run the project locally:
 
 ### 1. Clone the Repository
 
@@ -27,12 +27,16 @@ cd yolov10-streamlit
 ```
 
 ### 2. Set Up the Development Container
-This project uses a development container for consistent development environments. Ensure you have Docker and Visual Studio Code with the Remote - Containers extension installed.
+
+This project uses a development container for consistent environments. Ensure Docker and Visual Studio Code with the Remote - Containers extension are installed.
+
 1. Open the project in Visual Studio Code.
-2. Press F1, type Remote-Containers: Open Folder in Container..., and select the project folder.
+2. Press F1, type `Remote-Containers: Open Folder in Container...`, and select the project folder.
 
 ### 3. Install Dependencies
-If not using the development container, you can install the dependencies manually:
+
+Without the development container, install dependencies manually:
+
 ```bash
 pip install -r requirements.txt
 git clone https://github.com/THU-MIG/yolov10.git app/yolov10
@@ -40,15 +44,34 @@ pip install -r app/yolov10/requirements.txt
 pip install -e app/yolov10
 ```
 
-### 4. Run the Application
+### 4. Train Custom Model
+
+Adjust `config.py` with your settings (`BATCH_SIZE`, `EPOCHS`, `IMG_SIZE`, `YAML_PATH`). Then run:
+
+```bash
+python app/train.py
+```
+
+### 5. Run the Application
+
 ```bash
 streamlit run app/app.py
 ```
-Open your browser and navigate to http://localhost:8501 to access the application.
+
+Access the application at http://localhost:8501
 
 ## Usage
-1. Choose the type (Image or Video) from the sidebar.
-2. Upload an image or video file using the file uploader.
-3. View the uploaded file and its processed result in the app interface.
 
-Results are saved in the app/result folder.
+1. **Select Model**: Choose between `Default YOLOv10` or `Custom Trained Model`.
+2. **Select Type**: Choose `Image` or `Video` for your upload.
+3. **Upload File**: Use the sidebar file uploader to upload an image (JPG, PNG, JPEG) or video (MP4, AVI, MOV).
+4. **View and Process**:
+   - For **Image**: Display and process the uploaded image.
+   - For **Video**: Display and process the uploaded video (WEBM format).
+5. **Result**: Processed files are saved in `app/result`. View them in the app interface.
+
+## Notes
+
+- Ensure dependencies are installed as listed in requirements.txt.
+- For custom models, ensure `config.py` is correctly configured.
+- Demo files for testing are available [here](https://drive.google.com/drive/folders/15mKocsFZ5L9EceynG5_x-Y6KvkE85pS0?usp=sharing).

@@ -3,16 +3,16 @@ import tempfile
 
 import cv2
 import streamlit as st
+from config import (
+    DEMO_FILES_URL,
+    IMAGE_WIDTH,
+    MODEL_PATH,
+    RESULT_PATH,
+    TRAINED_MODEL_PATH,
+)
 from PIL import Image
 from ultralytics import YOLOv10
-
-from config import DEMO_FILES_URL, IMAGE_WIDTH, MODEL_PATH, RESULT_PATH
-from utils import download_model
-
-
-def load_model() -> YOLOv10:
-    """ Load the YOLOv10 model. """
-    return YOLOv10(MODEL_PATH) if download_model(MODEL_PATH) else None
+from utils import download_model, load_model
 
 
 def process_image(model: YOLOv10, image_path: str, result_path: str) -> bool:
@@ -52,8 +52,23 @@ def process_video(model: YOLOv10, video_path: str, result_path: str) -> bool:
         return False
     finally:
         cap.release()
-        out.release()
-        
+        out.release()  
+
+
+def select_model() -> YOLOv10:
+    """Select and load the model based on user choice."""
+    model_choice = st.sidebar.selectbox("Select model", ["Default YOLOv10", "Custom Trained Model"])
+    model_path = TRAINED_MODEL_PATH if model_choice == "Custom Trained Model" else MODEL_PATH
+    
+    if model_choice == "Default YOLOv10" and not download_model(MODEL_PATH):
+        return None
+
+    if model_choice == "Custom Trained Model" and not os.path.exists(TRAINED_MODEL_PATH):
+        st.error(f"Model file '{TRAINED_MODEL_PATH}' not found.")
+        return None
+
+    return load_model(model_path)
+
      
 def display_and_process_file(model: YOLOv10, type_choice: str, temp_path: str, result_path: str) -> None:
     """ Process the uploaded file based on the selected type (Image or Video). """
@@ -66,8 +81,6 @@ def display_and_process_file(model: YOLOv10, type_choice: str, temp_path: str, r
                 if process_image(model, temp_path, result_path):
                     st.success(f"Image processed. Result saved: {result_path}")
                     st.image(result_path, "Result Image", width=IMAGE_WIDTH)
-                else:
-                    st.error("Image processing failed.")
         else:
             st.video(temp_path)
             # Process and display result video
@@ -76,19 +89,17 @@ def display_and_process_file(model: YOLOv10, type_choice: str, temp_path: str, r
                 if process_video(model, temp_path, result_path):
                     st.success(f"Video processed. Result saved: {result_path}")
                     st.video(result_path)
-                else:
-                    st.error("Video processing failed.")
     except Exception as e:
         st.error(f"Error during processing: {e}")
 
 
 def main():
-    model = load_model()
-    if model is None:
-        st.error("Failed to load model.")
-        return
-
     st.sidebar.title("Object Detection")
+    model = select_model()
+    
+    if model is None:
+        return
+    
     type_choice = st.sidebar.selectbox("Select type", ["Image", "Video"])
     file = st.sidebar.file_uploader(
         "Choose a file...",

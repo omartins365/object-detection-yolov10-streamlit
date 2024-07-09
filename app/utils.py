@@ -1,7 +1,10 @@
 import os
-import wget
+
 import streamlit as st
+import wget
 from config import MODEL_URL
+from ultralytics import YOLOv10
+
 
 def download_model(model_path: str) -> bool:
     """ Download the YOLOv10 model if it doesn't exist. """
@@ -16,3 +19,8 @@ def download_model(model_path: str) -> bool:
             st.error(f"Failed to download model: {e}")
             return False
     return True
+
+
+def load_model(model_path: str) -> YOLOv10:
+    """Load the YOLOv10 model."""
+    return YOLOv10(model_path)
