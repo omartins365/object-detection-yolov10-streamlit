@@ -21,16 +21,17 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN git clone https://github.com/primestyle-co/dotfiles .dotfiles && python3 .dotfiles/install.py;
+RUN git clone https://github.com/primestyle-co/dotfiles /my_app/.dotfiles \
+    && python3 /my_app/.dotfiles/install.py
 
 RUN git clone https://github.com/THU-MIG/yolov10.git /my_app/app/yolov10 \
-    && cd /my_app/app/yolov10 \
-    && pip install -r requirements.txt \
-    && pip install -e .
+    && pip install -r /my_app/app/yolov10/requirements.txt \
+    && pip install -e /my_app/app/yolov10
 
 COPY . .
 
 RUN chown -R $USERNAME:$USERNAME /my_app
+
 USER $USERNAME
 SHELL ["/bin/bash", "-ec"]
 
