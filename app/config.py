@@ -6,3 +6,11 @@ MODEL_PATH = os.path.join(os.getcwd(), "app", "model", "yolov10n.pt")
 RESULT_PATH = os.path.join(os.getcwd(), "app", "result")
 
 IMAGE_WIDTH = 550
+
+YAML_PATH = os.path.join(os.getcwd(), "app", "data", "data.yaml")
+
+EPOCHS = 50
+IMG_SIZE = 640
+BATCH_SIZE = 16
+
+TRAINED_MODEL_PATH = os.path.join(os.getcwd(), "app", "yolov10", "runs", "detect", "train", "weights", "best.pt")
