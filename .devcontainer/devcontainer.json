@@ -9,6 +9,9 @@
 	"remoteUser": "my_app",
   	"containerUser": "my_app",
 	"runArgs": ["--name", "yolov10_streamlit"],
+	"mounts": [
+		"source=yolov10_streamlit_volume,target=/my_app,type=volume"
+	],
 	"customizations": {
 		"vscode": {
 			"extensions": [

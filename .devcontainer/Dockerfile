@@ -18,6 +18,7 @@ RUN apt-get update \
 WORKDIR /my_app
 
 COPY requirements.txt .
+
 RUN pip install --no-cache-dir -r requirements.txt
 
 RUN git clone https://github.com/primestyle-co/dotfiles /my_app/.dotfiles \
