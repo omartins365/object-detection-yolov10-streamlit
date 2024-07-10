@@ -22,7 +22,7 @@ Follow these steps to run the project locally:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/yolov10-streamlit.git
+git clone https://github.com/linhlinhle997/yolov10-streamlit.git
 cd yolov10-streamlit
 ```
 
