@@ -4,7 +4,6 @@ This project integrates the YOLOv10 model for object detection into a Streamlit 
 
 ### Files and Directories
 
-- **README.md**: Project overview and instructions.
 - **app**: Main application code.
   - **app.py**: Streamlit app for uploading and processing images/videos.
   - **config.py**: Configuration settings, including paths and URLs.
