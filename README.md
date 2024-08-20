@@ -1,4 +1,4 @@
-# YOLOv10-Streamlit
+# Object Detection Yolov10 Streamlit
 
 This project integrates the YOLOv10 model for object detection into a Streamlit application. The app allows users to upload images or videos and receive object detection results. It provides an interactive interface for users to interact with the model and visualize the results directly in their browser.
 
