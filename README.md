@@ -21,8 +21,8 @@ Follow these steps to run the project locally:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/linhlinhle997/yolov10-streamlit.git
-cd yolov10-streamlit
+https://github.com/linhlinhle997/object-detection-yolov10-streamlit.git
+cd object-detection-yolov10-streamlit
 ```
 
 ### 2. Set Up the Development Container
