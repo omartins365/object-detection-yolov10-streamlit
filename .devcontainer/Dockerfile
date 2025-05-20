@@ -35,6 +35,6 @@ RUN chown -R $USERNAME:$USERNAME /my_app
 USER $USERNAME
 SHELL ["/bin/bash", "-ec"]
 
-EXPOSE 8501
+EXPOSE 7860
 
-ENTRYPOINT ["streamlit", "run", "app/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+ENTRYPOINT ["python", "app/app.py"]

@@ -1,8 +1,8 @@
+import gradio as gr
+import cv2
 import os
 import tempfile
-
-import cv2
-import streamlit as st
+from PIL import Image
 from config import (
     DEMO_FILES_URL,
     IMAGE_WIDTH,
@@ -10,118 +10,80 @@ from config import (
     RESULT_PATH,
     TRAINED_MODEL_PATH,
 )
-from PIL import Image
 from ultralytics import YOLOv10
 from utils import download_model, load_model
 
 
-def process_image(model: YOLOv10, image_path: str, result_path: str) -> bool:
-    """ Perform object detection on an image and save the result. """
-    try:
-        result = model(source=image_path)[0]  # Perform object detection
-        result.save(result_path)  # Save the result image
-        return True
-    except Exception as e:
-        st.error(f"Error processing image: {e}")
-        return False
+def process_image(model: YOLOv10, image: Image.Image) -> Image.Image:
+    result = model(source=image)[0]
+    return Image.fromarray(result.plot())
 
 
-def process_video(model: YOLOv10, video_path: str, result_path: str) -> bool:
-    """ Perform object detection on a video and save the result. """
-    try:
-        cap = cv2.VideoCapture(video_path)
-        if not cap.isOpened():
-            st.error("Error: Could not open video file.")
-            return False
-
-        frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        fps = int(cap.get(cv2.CAP_PROP_FPS))
-        fourcc = cv2.VideoWriter_fourcc(*'vp80')
-        out = cv2.VideoWriter(result_path, fourcc, fps, (frame_width, frame_height))
-        
-        while cap.isOpened():
-            success, frame = cap.read()
-            if not success:
-                break
-            results = model(frame)  # Perform object detection on each frame
-            out.write(results[0].plot())  # Write processed frame to output video
-        return True
-    except Exception as e:
-        st.error(f"Error processing video: {e}")
-        return False
-    finally:
-        cap.release()
-        out.release()  
+def process_video(model: YOLOv10, video_path: str) -> str:
+    cap = cv2.VideoCapture(video_path)
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    output_video_path = tempfile.mktemp(suffix=".webm")
+    out = cv2.VideoWriter(output_video_path, cv2.VideoWriter_fourcc(*'vp80'), fps, (frame_width, frame_height))
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
+        results = model(frame)
+        annotated_frame = results[0].plot()
+        out.write(annotated_frame)
+    cap.release()
+    out.release()
+    return output_video_path
 
 
-def select_model() -> YOLOv10:
-    """Select and load the model based on user choice."""
-    model_choice = st.sidebar.selectbox("Select model", ["Default YOLOv10", "Custom Trained Model"])
+def infer(image, video, input_type, model_choice):
     model_path = TRAINED_MODEL_PATH if model_choice == "Custom Trained Model" else MODEL_PATH
-    
-    if model_choice == "Default YOLOv10" and not download_model(MODEL_PATH):
-        return None
-
-    if model_choice == "Custom Trained Model" and not os.path.exists(TRAINED_MODEL_PATH):
-        st.error(f"Model file '{TRAINED_MODEL_PATH}' not found.")
-        return None
-
-    return load_model(model_path)
-
-     
-def display_and_process_file(model: YOLOv10, type_choice: str, temp_path: str, result_path: str) -> None:
-    """ Process the uploaded file based on the selected type (Image or Video). """
-    try:
-        if type_choice == "Image":
-            image = Image.open(temp_path)
-            st.image(image, "Uploaded Image", width=IMAGE_WIDTH)
-            # Process and display result image
-            with st.spinner("Processing image..."):
-                if process_image(model, temp_path, result_path):
-                    st.success(f"Image processed. Result saved: {result_path}")
-                    st.image(result_path, "Result Image", width=IMAGE_WIDTH)
-        else:
-            st.video(temp_path)
-            # Process and display result video
-            with st.spinner("Processing video..."):
-                result_path = result_path.replace(".mp4", ".webm")
-                if process_video(model, temp_path, result_path):
-                    st.success(f"Video processed. Result saved: {result_path}")
-                    st.video(result_path)
-    except Exception as e:
-        st.error(f"Error during processing: {e}")
-
-
-def main():
-    st.sidebar.title("Object Detection")
-    model = select_model()
-    
-    if model is None:
-        return
-    
-    type_choice = st.sidebar.selectbox("Select type", ["Image", "Video"])
-    file = st.sidebar.file_uploader(
-        "Choose a file...",
-        type=["jpg", "png", "jpeg"] if type_choice == "Image" else ["mp4", "avi", "mov"]
-    )
-
-    if file:
-        os.makedirs(RESULT_PATH, exist_ok=True) 
-
-        # Save uploaded file to a temporary location
-        with tempfile.NamedTemporaryFile(delete=False, suffix=f".{file.name.split('.')[-1]}", dir=RESULT_PATH) as temp_file:
-            temp_file.write(file.getvalue())
+    if model_choice == "Default YOLOv10":
+        download_model(MODEL_PATH)
+    model = load_model(model_path)
+    if input_type == "Image" and image is not None:
+        return process_image(model, image), None
+    elif input_type == "Video" and video is not None:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_file:
+            temp_file.write(video.read())
             temp_path = temp_file.name
-
-        result_path = os.path.join(RESULT_PATH, f"result_{file.name}")
-        display_and_process_file(model, type_choice, temp_path, result_path)
-
-        # Remove temporary file after processing
-        os.remove(temp_path) 
+        result_video_path = process_video(model, temp_path)
+        return None, result_video_path
     else:
-        st.sidebar.markdown(f"You can download demo files [here]({DEMO_FILES_URL}).")
+        return None, None
+
+
+def gradio_app():
+    with gr.Blocks() as demo:
+        gr.Markdown("# YOLOv10 Object Detection (Gradio)")
+        with gr.Row():
+            input_type = gr.Radio(["Image", "Video"], value="Image", label="Input Type")
+            model_choice = gr.Dropdown(["Default YOLOv10", "Custom Trained Model"], value="Default YOLOv10", label="Model")
+        with gr.Row():
+            image = gr.Image(type="pil", label="Input Image")
+            video = gr.Video(label="Input Video")
+        with gr.Row():
+            output_image = gr.Image(type="pil", label="Annotated Image")
+            output_video = gr.Video(label="Annotated Video")
+        def update_inputs(input_type):
+            return (
+                gr.update(visible=input_type=="Image"),
+                gr.update(visible=input_type=="Video"),
+                gr.update(visible=input_type=="Image"),
+                gr.update(visible=input_type=="Video")
+            )
+        input_type.change(update_inputs, [input_type], [image, video, output_image, output_video])
+        btn = gr.Button("Detect Objects")
+        btn.click(
+            fn=infer,
+            inputs=[image, video, input_type, model_choice],
+            outputs=[output_image, output_video],
+        )
+        gr.Markdown(f"[Download demo files here]({DEMO_FILES_URL})")
+    return demo
 
 
 if __name__ == "__main__":
-    main()
+    gradio_app().launch(server_port=7860, server_name="0.0.0.0")

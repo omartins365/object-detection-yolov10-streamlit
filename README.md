@@ -1,11 +1,11 @@
-# Object Detection Yolov10 Streamlit
+# Object Detection Yolov10 Gradio
 
-This project integrates the YOLOv10 model for object detection into a Streamlit application. The app allows users to upload images or videos and receive object detection results. It provides an interactive interface for users to interact with the model and visualize the results directly in their browser.
+This project integrates the YOLOv10 model for object detection into a Gradio application. The app allows users to upload images or videos, or use a real-time camera stream, and receive object detection results. It provides an interactive interface for users to interact with the model and visualize the results directly in their browser.
 
 ### Files and Directories
 
 - **app**: Main application code.
-  - **app.py**: Streamlit app for uploading and processing images/videos.
+  - **app.py**: Gradio app for uploading and processing images/videos.
   - **config.py**: Configuration settings, including paths and URLs.
   - **utils.py**: Utility functions, such as model downloading and image processing.
   - **train.py**: Script to train a custom YOLOv10 model.
@@ -54,20 +54,20 @@ python app/train.py
 ### 5. Run the Application
 
 ```bash
-streamlit run app/app.py
+python app/app.py
 ```
 
-Access the application at http://localhost:8501
+Access the application at http://localhost:7860
 
 ## Usage
 
 1. **Select Model**: Choose between `Default YOLOv10` or `Custom Trained Model`.
-2. **Select Type**: Choose `Image` or `Video` for your upload.
-3. **Upload File**: Use the sidebar file uploader to upload an image (JPG, PNG, JPEG) or video (MP4, AVI, MOV).
+2. **Select Type**: Choose `Image` or `Video` for your upload, or use a live camera stream (if supported by your browser).
+3. **Upload File**: Use the Gradio interface to upload an image (JPG, PNG, JPEG) or video (MP4, AVI, MOV).
 4. **View and Process**:
    - For **Image**: Display and process the uploaded image.
    - For **Video**: Display and process the uploaded video (WEBM format).
-5. **Result**: Processed files are saved in `app/result`. View them in the app interface.
+5. **Result**: Processed files are saved in `app/result` (if applicable). View them in the app interface.
 
 ## Notes
 
