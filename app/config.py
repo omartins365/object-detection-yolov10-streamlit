@@ -9,8 +9,8 @@ IMAGE_WIDTH = 550
 
 YAML_PATH = os.path.join(os.getcwd(), "app", "data", "data.yaml")
 
-EPOCHS = 50
+EPOCHS = 100
 IMG_SIZE = 640
-BATCH_SIZE = 16
+BATCH_SIZE = 24
 
-TRAINED_MODEL_PATH = os.path.join(os.getcwd(), "app", "yolov10", "runs", "detect", "train", "weights", "best.pt")
+TRAINED_MODEL_PATH = "C:\Users\Martins\WorkSpace\cashew_yolo\cashew_model\weights\best.pt"# os.path.join(os.getcwd(), "app", "yolov10", "runs", "detect", "train", "weights", "best.pt")
