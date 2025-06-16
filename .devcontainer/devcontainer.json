@@ -1,5 +1,5 @@
 {
-	"name": "YOLOv10 Streamlit",
+	"name": "Cashew YOLOv10 Gradio",
 	"build": {
 		"context": "..",
 		"dockerfile": "Dockerfile"
@@ -8,9 +8,9 @@
 	"forwardPorts": [8501],
 	"remoteUser": "my_app",
   	"containerUser": "my_app",
-	"runArgs": ["--name", "yolov10_streamlit"],
+	"runArgs": ["--name", "yolov10_gradio"],
 	"mounts": [
-		"source=yolov10_streamlit_volume,target=/my_app,type=volume"
+		"source=yolov10_gradio_volume,target=/my_app,type=volume"
 	],
 	"customizations": {
 		"vscode": {
